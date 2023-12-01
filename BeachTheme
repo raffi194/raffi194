@@ -1,0 +1,522 @@
+import processing.core.PApplet;
+
+public class BeachTheme extends PApplet {
+
+    float boatX1; // Variabel untuk menyimpan posisi X kapal pertama
+    float boatX2; // Variabel untuk menyimpan posisi X kapal kedua
+    float boatSpeed = 3; // Kecepatan pergerakan kapal
+
+    float cloud1X = 0;
+    float cloud2X = 300;
+
+    int numberOfDrops = 300; // Jumlah tetesan hujan
+    float[] dropX = new float[numberOfDrops];
+    float[] dropY = new float[numberOfDrops];
+
+    Bird bird1; // Objek burung pertama
+    Bird bird2; // Objek burung kedua
+    Bird bird3; // Objek burung pertama
+    Bird bird4; // Objek burung kedua
+
+    float sunX; // Variabel untuk menyimpan posisi X matahari
+    float sunSpeed = 2; // Kecepatan pergerakan matahari
+    int sunDelay = 145; // Delay untuk pergerakan matahari
+    int sunCounter = 90; // Counter untuk delay matahari
+
+    float carX = -130;
+    float carX1 = -200;
+    float noiseOffset = 0.0f;
+
+    int xs = -120, ys = 275;
+
+    public static void main(String[] args) {
+        PApplet.runSketch(new String[] { "Beach Theme" }, new BeachTheme());
+    }
+
+    public void sunmoon() {
+
+        if (xs < 500) {
+            fill(145, 142, 141);
+            ellipse(xs += 25, ys -= 10, 75, 75);
+        } else if (xs < 650) {
+            fill(255, 255, 0);
+            ellipse(xs += 25, ys -= 5, 75, 75);
+        } else if (xs < 700) {
+            fill(255, 255, 0);
+            ellipse(xs += 25, ys, 75, 75);
+        } else if (xs < 1000) {
+            fill(255, 255, 0);
+            ellipse(xs += 25, ys += 5, 75, 75);
+        } else if (xs < 1300) {
+            fill(255, 255, 0);
+            ellipse(xs += 25, ys += 10, 75, 75);
+        } else {
+            fill(145, 142, 141);
+            ellipse(xs += 25, ys += 10, 75, 75);
+        }
+        if (xs >= 1450) {
+            xs = -120;
+            ys = 275;
+
+            // Animated sunrise and sunset
+            float sunSize = map(xs, 500, 1000, 50, 150);
+            ellipse(xs += 25, ys += 10, sunSize, sunSize);
+
+        }
+
+    }
+
+    public void pagi() {
+        if (xs <= 300) {
+            background(59, 0, 179);
+        } else if (xs <= 500) {
+            background(25, 64, 255);
+        } else if (xs <= 800) {
+            background(179, 255, 255);
+        } else if (xs <= 1200) {
+            background(255, 128, 0);
+        } else {
+            background(59, 0, 179);
+        }
+
+        noStroke();
+        sunmoon();
+        fill(9, 173, 214);
+        rect(0, 355, 1400, 400);
+        fill(0, 78, 97);
+        rect(0, 355, 1400, 25);
+    }
+
+    @Override
+    public void settings() {
+        size(1366, 768);
+        smooth();
+
+        // Inisialisasi posisi awal tetesan hujan
+        for (int i = 0; i < numberOfDrops; i++) {
+            dropX[i] = random(width); // Posisi awal x secara acak
+            dropY[i] = random(height); // Posisi awal y secara acak
+        }
+    }
+
+    @Override
+    public void setup() {
+        boatX1 = width / 4; // Inisialisasi posisi awal kapal pertama
+        boatX2 = width / 2; // Inisialisasi posisi awal kapal kedua
+
+        bird1 = new Bird(100, 100, 2);
+        bird2 = new Bird(200, 150, 3);
+        bird3 = new Bird(300, 120, 4); // Burung ketiga
+        bird4 = new Bird(400, 180, 5); // Burung keempat
+
+        sunX = width / 20;
+    }
+
+    @Override
+    public void draw() {
+        background(0, 0, 205); // Sky Blue background
+
+        pagi();
+        delay(76);
+
+        // Draw sand
+        fill(255, 178, 102); // Sand color
+        stroke(127); // Stroke color
+        rect(0, height * 2 / 3, width, height * 1 / 3); // Sand area
+
+        drawPager();
+
+        drawgarispager();
+
+        drawRoad();
+
+        drawgarisjalan();
+
+        drawOceanWave();
+
+        drawCloud(cloud1X, 100);
+        drawCloud(cloud2X, 150);
+
+        // Gerakan awan
+        cloud1X += 4;
+        cloud2X += 4;
+
+        // Reset posisi awan jika melewati batas kanan layar
+        if (cloud1X > width) {
+            cloud1X = -200;
+        }
+        if (cloud2X > width) {
+            cloud2X = -200;
+        }
+
+        // Draw ocean
+        fill(0, 102, 204); // Deep Blue
+        noStroke();
+        rect(0, height / 3, width, height / 3); // Ocean area
+
+        // fill(255, 102, 0); // Warna kuning untuk matahari
+        // ellipse(sunX, height / 8, 100, 100); // Gambar matahari
+        // sunX += sunSpeed;
+        // if (sunX > width + 50) {
+        // sunX = -50;
+        // }
+        // drawCar(carX, height * 12 / 13);
+
+        // // Update car position
+        // carX += 2; // Adjust the speed of the car by changing this value
+
+        // // Reset car position if it goes off the screen
+        // if (carX > width) {
+        // carX = -80; // Set the initial x-position of the car when it goes off the
+        // screen
+        // }
+        // Draw boats
+        drawBoat(boatX1, height * 5 / 8); // Kapal pertama
+        drawBoat(boatX2, height * 3 / 4); // Kapal kedua
+
+        // Update boat positions
+        boatX1 += boatSpeed * 3; // Pergerakan kapal pertama ke kanan
+        boatX2 += boatSpeed * 3; // Pergerakan kapal kedua ke kanan dengan kecepatan yang lebih cepat
+
+        // Jika kapal melewati batas kanan layar, kembali ke posisi awal di sebelah kiri
+        // layar
+        if (boatX1 > width + 100) {
+            boatX1 = -100;
+        }
+        if (boatX2 > width + 100) {
+            boatX2 = -100;
+        }
+
+        // Update boat positions based on mouse position
+        float distance1 = dist(boatX1, height * 5 / 8, mouseX, mouseY); // Hitung jarak antara kapal dan mouse
+        float angle1 = atan2(mouseY - height * 8 / 8, mouseX - boatX1); // Hitung sudut arah mouse
+
+        if (distance1 > 5) { // Menetapkan jarak minimum sebelum kapal mulai bergerak
+            boatX1 += cos(angle1) * boatSpeed; // Pergerakan kapal pada sumbu x
+        }
+
+        // drawBoat(boatX1, height * 5 / 8);
+
+        // float distance2 = dist(boatX2, height * 5 / 8, mouseX, mouseY); // Hitung
+        // jarak antara kapal dan mouse
+        // float angle2 = atan2(mouseY - height * 8 / 8, mouseX - boatX2); // Hitung
+        // sudut arah mouse
+
+        // if (distance2 > 5) { // Menetapkan jarak minimum sebelum kapal mulai bergerak
+        // boatX2 += cos(angle2) * boatSpeed; // Pergerakan kapal pada sumbu x
+        // }
+
+        // Draw palm trees
+        drawPalmTree(100, height * 5 / 6);
+        drawPalmTree(500, height * 5 / 6);
+        drawPalmTree(900, height * 5 / 6);
+        drawPalmTree(1300, height * 5 / 6);
+
+        drawStreetLight(200, height * 2 / 3); // Misalnya, lampu jalan di posisi x = 200
+        drawStreetLight(0, height * 2 / 3);
+        drawStreetLight(400, height * 2 / 3);
+        drawStreetLight(600, height * 2 / 3);
+        drawStreetLight(800, height * 2 / 3);
+        drawStreetLight(1000, height * 2 / 3);
+        drawStreetLight(1200, height * 2 / 3);
+        drawStreetLight(1350, height * 2 / 3);
+
+        drawCar(carX, height * 12 / 13);
+
+        // Update car position
+        carX += 8; // Adjust the speed of the car by changing this value
+
+        // Reset car position if it goes off the screen
+        if (carX > width) {
+            carX = -80; // Set the initial x-position of the car when it goes off the screen
+        }
+
+        drawCar1(carX1, height * 12 / 13);
+
+        // Update car position
+        carX1 -= 8; // Adjust the speed of the car by changing this value
+
+        // Reset car position if it goes off the screen
+        if (carX1 < -160) { // Ubah nilai batas jika diperlukan
+            carX1 = width; // Set the initial x-position of the car when it goes off the screen
+        }
+        // Draw beach decorations
+        // drawBeachDecorations();
+
+        bird1.update();
+        bird1.display();
+
+        bird2.update();
+        bird2.display();
+
+        bird3.update(); // Update dan tampilkan burung ketiga
+        bird3.display();
+
+        bird4.update(); // Update dan tampilkan burung keempat
+        bird4.display();
+
+        // for (int i = 0; i < numSnowflakes; i++) {
+        // snowflakes[i].fall(); // Biarkan butir salju jatuh
+        // snowflakes[i].display(); // Tampilkan butir salju
+        // }
+        drawRaindrops();
+    }
+
+    // Fungsi untuk menggambar dan menggerakkan tetesan hujan
+    void drawRaindrops() {
+        fill(152, 187, 250); // Warna tetesan hujan (biru muda)
+
+        for (int i = 0; i < numberOfDrops; i++) {
+            ellipse(dropX[i], dropY[i], 5, 25); // Menggambar tetesan hujan
+            dropY[i] += 2; // Menggerakkan tetesan hujan ke bawah
+
+            // Jika tetesan hujan mencapai batas bawah layar, reset ke atas
+            if (dropY[i] > height) {
+                dropY[i] = 0;
+                dropX[i] = random(width);
+            }
+        }
+    }
+
+    void drawCloud(float x, float y) {
+        fill(255);
+        noStroke();
+        ellipse(x, y, 100, 70);
+        ellipse(x + 40, y + 10, 100, 70);
+        ellipse(x + 70, y, 100, 70);
+        // Draw raindrops
+
+    }
+
+    // class Snowflake {
+    // float x, y; // Posisi butir salju
+    // float speed; // Kecepatan jatuh butir salju
+
+    // Snowflake(float x, float y) {
+    // this.x = x;
+    // this.y = y;
+    // this.speed = random(1, 3); // Kecepatan jatuh butir salju (acak antara 1 dan
+    // 3)
+    // }
+
+    // // void fall() {
+    // // // Pergerakan butir salju ke bawah
+    // // y += speed;
+
+    // // // Jika butir salju mencapai bagian bawah layar, kembali ke atas dengan
+    // posisi
+    // // // acak
+    // // if (y > height) {
+    // // y = random(-height, 0);
+    // // x = random(width);
+    // // }
+    // // }
+
+    // // void display() {
+    // // // Tampilkan butir salju sebagai lingkaran
+    // // fill(255);
+    // // noStroke();
+    // // ellipse(x, y, 8, 8); // Ukuran dan bentuk butir salju
+    // // }
+    // // }
+
+    class Bird {
+        float x, y; // Posisi burung
+        float speed; // Kecepatan burung
+
+        Bird(float x, float y, float speed) {
+            this.x = x;
+            this.y = y;
+            this.speed = speed;
+        }
+
+        void update() {
+            x += speed; // Menggerakkan burung ke kanan
+
+            // Jika burung mencapai batas kanan layar, kembali ke kiri layar
+            if (x > width + 50) {
+                x = -50;
+                y = random(50, height / 3); // Posisi random vertikal pada langit
+            }
+        }
+
+        void display() {
+            fill(255, 255, 255); // Warna putih untuk burung
+            triangle(x, y, x + 15, y - 10, x + 30, y); // Sayap burung
+            ellipse(x, y, 30, 20); // Badan burung
+        }
+    }
+
+    // void drawCloud(float x, float y) {
+    // fill(255);
+    // noStroke();
+    // ellipse(x, y, 100, 70);
+    // ellipse(x + 40, y + 10, 100, 70);
+    // ellipse(x + 70, y, 100, 70);
+    // }
+
+    // void drawBeachDecorations() {
+    // // Payung pantai
+    // fill(0, 153, 153); // Yellow
+    // noStroke();
+    // arc(width / 5, height * 6 / 7, 200, 200, PI, TWO_PI); // Payung Pantai 1
+    // arc(width / 2, height * 6 / 7, 200, 200, PI, TWO_PI); // Payung Pantai 2
+
+    // }
+
+    // void drawgarispager() {
+    // fill(70); // Warna abu-abu untuk jalan raya
+    // noStroke();
+    // rect(0, height * 2 / 2 + 50, width, 50); // Membuat jalan raya di bagian
+    // bawah pasir
+    // }
+
+    // Fungsi untuk menggambar dan menggerakkan tetesan hujan
+    // void drawRaindrops() {
+    // fill(152, 187, 250); // Warna tetesan hujan (biru muda)
+
+    // for (int i = 0; i < numberOfDrops; i++) {
+    // ellipse(dropX[i], dropY[i], 5, 25); // Menggambar tetesan hujan
+    // dropY[i] += 5; // Menggerakkan tetesan hujan ke bawah
+
+    // // Jika tetesan hujan mencapai batas bawah layar, reset ke atas
+    // if (dropY[i] > height) {
+    // dropY[i] = 0;
+    // dropX[i] = random(width);
+    // }
+    // }
+    // }
+
+    void drawRoad() {
+        fill(64); // Warna abu-abu untuk jalan raya
+        noStroke();
+        rect(0, height * 2 / 3 + 140, width, 120); // Membuat jalan raya di bagian bawah pasir
+    }
+
+    void drawPager() {
+        fill(160); // Warna abu-abu untuk jalan raya
+        noStroke();
+        rect(0, height * 2 / 3 + 50, width, 50); // Membuat jalan raya di bagian
+        // bawah pasir
+    }
+
+    void drawgarisjalan() {
+        fill(255);
+        for (int i = 0; i < width; i += 60) {
+            rect(i + 20, 710, 20, 10); // Bagian penopang rel bawah
+        }
+    }
+
+    void drawgarispager() {
+        fill(255); // Warna abu-abu untuk jalan raya
+        noStroke();
+        rect(0, height * 2 / 3 + 48, width, 5); // Membuat jalan raya di bagian bawah pasir
+    }
+
+    // Fungsi untuk menggambar pohon palem
+    void drawPalmTree(float x, float y) {
+        fill(139, 69, 19); // Brown for tree trunk
+        rect(x - 5, y - 120, 10, 120); // Tree trunk
+
+        fill(34, 139, 34); // Green for leaves
+        ellipse(x, y - 130, 80, 80); // Top part of tree
+        ellipse(x + 20, y - 150, 80, 80); // Middle part of tree
+        ellipse(x - 20, y - 150, 80, 80); // Bottom part of tree
+
+    }
+
+    void drawCar(float x, float y) {
+        // Menggambar badan mobil
+        fill(255, 0, 0); // Warna merah untuk badan mobil
+        rect(x, y - 95, 160, 60); // Badan mobil, ubah nilai panjang dan lebar di sini
+
+        // Roda mobil
+        fill(0); // Warna hitam untuk roda
+        ellipse(x + 40, y + -35, 40, 40); // Roda depan, ubah nilai diameter di sini
+        ellipse(x + 120, y + -35, 40, 40); // Roda belakang, ubah nilai diameter di sini
+
+        // Menambahkan hiasan pada mobil
+        fill(255, 255, 0); // Warna kuning untuk hiasan mobil
+
+        // Lampu depan mobil
+        rect(x + 155, y - 80, 10, 10); // Ubah posisi dan ukuran lampu depan
+
+        // Jendela mobil
+        fill(150, 200, 255); // Warna biru untuk jendela mobil
+        rect(x + 30, y - 110, 80, 50); // Jendela mobil, ubah nilai panjang dan lebar di sini
+    }
+
+    void drawCar1(float x, float y) {
+        // Menggambar badan mobil
+        fill(255, 0, 0); // Warna merah untuk badan mobil
+        rect(x, y - 50, 160, 80); // Badan mobil, ubah nilai panjang dan lebar di sini
+
+        // Roda mobil
+        fill(0); // Warna hitam untuk roda
+        ellipse(x + 40, y + 35, 40, 40); // Roda depan, ubah nilai diameter di sini
+        fill(255);
+        ellipse(x + 40, y + 35, 20, 20);
+        fill(0);
+        ellipse(x + 120, y + 35, 40, 40); // Roda belakang, ubah nilai diameter di sini
+        fill(255);
+        ellipse(x + 120, y + 35, 20, 20);
+
+        // Menambahkan hiasan pada mobil
+        fill(0); // Warna kuning untuk hiasan mobil
+
+        // Lampu depan mobil
+        rect(x + 155, y + 15, 10, 10); // Ubah posisi dan ukuran lampu depan
+
+        // Jendela mobil
+        fill(150, 200, 255); // Warna biru untuk jendela mobil
+        rect(x + 10, y - 38, 40, 30); // Jendela mobil, ubah nilai panjang dan lebar di sini
+        fill(150, 200, 255); // Warna biru untuk jendela mobil
+        rect(x + 75, y - 38, 30, 30); // Jendela mobil, ubah nilai panjang dan lebar di sini
+        fill(150, 200, 255); // Warna biru untuk jendela mobil
+        rect(x + 120, y - 38, 30, 30); // Jendela mobil, ubah nilai panjang dan lebar di sini
+    }
+
+    void drawStreetLight(float x, float y) {
+        // Menggambar tiang lampu
+        fill(100); // Warna abu-abu untuk tiang lampu
+        rect(x, y - -30, 20, 100); // Bentuk tiang lampu
+
+        // Menggambar lampu
+        fill(255, 255, 0); // Warna kuning untuk lampu jalan
+        ellipse(x + 10, y - -20, 37, 37); // Lampu jalan
+    }
+
+    void drawBoat(float x, float y) {
+        float boatHeight = 150; // Menentukan tinggi kapal
+        float sailHeight = 100; // Menentukan tinggi layar
+
+        // Body of the boat
+        fill(210, 105, 30); // Warna kapal
+        quad(x - 50, y - boatHeight, x - 100, y - boatHeight - 50, x + 100, y - boatHeight - 50, x + 50,
+                y - boatHeight); // Badan kapal
+
+        // Sails of the boat
+        fill(255); // Warna putih untuk layar
+        triangle(x, y - boatHeight - sailHeight, x + 30, y - boatHeight - 50, x - 30, y - boatHeight - 50); // Layar
+
+        // // Additional decorations (such as flag, stripes, etc.)
+        // // You can add more decorations here to enhance the appearance of the boat
+        // fill(255, 0, 0); // Red color for flag
+        // // rect(x - 5, y - boatHeight - 120, 10, 20); // Flag pole
+        // triangle(x - 5, y - boatHeight - 120, x - 15, y - boatHeight - 140, x + 5, y
+        // - boatHeight - 140); // Flag
+    }
+
+    void drawOceanWave() {
+        fill(0, 102, 204); // Deep Blue
+        noStroke();
+
+        // Iterate over each vertical slice of the ocean
+        for (int x = 0; x < width; x += 5) {
+            // Use Perlin noise to displace the vertices of the ocean rectangle
+            float yOffset = map(noise(noiseOffset), 0, 3, -14, 14);
+            rect(x, height / 3 + yOffset, 5, height / 3);
+            noiseOffset += 0.04; // Adjust the noise offset for the next frame (slower rate)
+        }
+    }
+}
