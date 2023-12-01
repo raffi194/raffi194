@@ -1,0 +1,302 @@
+import processing.core.PApplet;
+
+public class design extends PApplet {
+    //Variable Tiap Objek
+    float mobilX;
+    float mobilY;
+    float mobil2X;
+    float mobil2Y;
+    float[] awanX;
+    float[] awanY;
+    float kecepatanawan = 0.5f;
+    int jumlahawan = 6;
+    float[] burungX;
+    float[] burungY;
+    int burung = 3; 
+    float kecepatanburung = 1.7f;
+    
+    int warnajalan = color(100);
+    int warnamatahari = color(255, 165, 0);
+    int warnagunung1 = color(0, 128, 0); 
+    int warnagunung2 = color (0, 128, 0);
+
+    //Method Main Untuk Menjalankan
+    public static void main(String[] args) {
+        design streetAnimation = new design();
+        PApplet.runSketch(new String[]{"Animasi Pemandangan"}, streetAnimation);
+    }
+
+    @Override
+    public void settings() {
+        //Ukuran Canvas
+        size(800,400);
+
+        //Posisi Awal Mobil
+        mobilX = -50;
+        mobilY = 100;
+        mobil2X = 800;
+        mobil2Y = 360;
+
+        //Posisi Awan Secara Acak
+        awanX = new float[jumlahawan];
+        awanY = new float[jumlahawan];
+        for (int i = 0; i < jumlahawan; i++) {
+            awanX[i] = random(800);
+            awanY[i] = random(50, 150);
+        }
+
+        //Inialisasi Method Burung
+        burungX = new float[burung];
+        burungY = new float[burung];
+        pergerakanBurung();
+
+    }
+
+    @Override
+    public void draw() {
+        //Warna Gradasi Latar Belakang
+        int x1 = 0;
+        int y1 = 0;
+        int x2 = 1300;
+        int y2 = 0;
+        int R1 = 255;
+        int G1 = 165;
+        int B1 = 0;
+        noStroke();
+        for (int x = 0; x <= 380; x++) {
+            fill(R1, G1, B1);
+            rect(x1, y1, x2, y2);
+            y1++;
+            y2++;
+            G1++;
+        }
+
+        //Memanggil Method Tiap Elemen
+        drawMatahari();
+        drawGunung();
+        drawWarung();
+        drawKursi();
+        drawLampujalanan();
+        drawJalanan();
+        drawMobil();
+        drawMobil2();
+        drawMarkaJalan();
+        drawAwan();
+
+        //Posisi dan Pergerakan Burung
+        for (int i = 0; i < burung; i++) {
+            drawBurung(burungX[i], burungY[i]);
+            updatePosisiBurung(i);
+        }
+    }
+
+    //Method Menggambar Objek Jalanan
+    private void drawJalanan() {
+        fill(warnajalan);
+        rect(0, 300, 800, 100);
+
+        fill(0);
+        rect(0, 290, 800, 10);
+
+        //Pembatas Jalanan
+        fill(255, 255, 0);
+        for (int i = 0; i < 800; i += 60) {
+            rect(i, 290, 30, 10);
+        }
+    }
+
+    //Method Menggambar Objek Mobil Pertama
+    private void drawMobil() {
+        fill(255, 0, 0);
+        rect(mobilX, 280, 50, 30);
+
+        fill(0);
+        ellipse(mobilX + 10, 310, 10, 10);
+        ellipse(mobilX + 40, 310, 10, 10);
+
+        //Pergerakan Mobil
+        fill(255);
+        rect(mobilX + 30, 283, 17, 13);
+        mobilX = (mobilX + 2) % 800;
+        if (mobilX > 800) {
+            mobilX = -50;
+        }
+    }
+
+    //Method Menggambar Objek Mobil Kedua
+    private void drawMobil2() {
+        fill(0, 255, 0);
+        rect(mobil2X, mobil2Y, 50, 30);
+
+        fill(0);
+        ellipse(mobil2X + 10, mobil2Y + 30, 10, 10);
+        ellipse(mobil2X + 40, mobil2Y + 30, 10, 10);
+
+        //Pergerakan Mobil
+        fill(255);
+        rect(mobil2X + 3, mobil2Y + 3, 17, 13);
+        mobil2X = (mobil2X - 2) % 800;
+        if (mobil2X < -50) {
+            mobil2X = 800;
+            mobil2Y = 360;
+        }
+    }
+
+    //Method Menggambar Objek Marka Jalan
+    private void drawMarkaJalan() {
+        fill(255);
+
+        for (int i = 0; i < 800; i += 60) {
+            rect(i, 340, 30, 5);
+        }
+    }
+
+    //Method Menggambar Objek Matahari
+    private void drawMatahari() {
+        fill(warnamatahari);
+        ellipse(460, 270, 150, 150);
+    }
+
+    //Pergerakan Awan
+    private void drawAwan() {
+        noStroke();
+        fill(252, 252, 121);
+        for (int i = 0; i < jumlahawan; i++) {
+            drawAwan(awanX[i], awanY[i]);
+            awanX[i] = (awanX[i] + kecepatanawan) % 800;
+
+            if (awanX[i] > 800) {
+                awanX[i] = -60;
+                awanY[i] = random(50, 150);
+            }
+        }
+    }
+
+    //Method Menggambar Objek Awan
+    private void drawAwan(float x, float y) {
+        beginShape();
+        ellipse(x, y, 60, 30);
+        ellipse(x + 20, y - 10, 60, 30);
+        ellipse(x + 40, y, 60, 30);
+        endShape();
+    }
+
+    //Method Menggambar Objek Warung Dipinggir Jalan
+    private void drawWarung() {
+        fill(184, 134, 11);
+        rect(117, 260, 70, 40);
+        drawPohon(210, 290);
+    
+        fill(150, 75, 0);
+        triangle(100, 260, 205, 260, 152, 240);
+
+        fill(184, 134, 11);
+        rect(617, 260, 70, 40);
+        drawPohon(720, 290);
+
+        fill(150, 75, 0);
+        triangle(600, 260, 705, 260, 652, 240);
+    }
+
+    //Method Menggambar Objek Gunung
+    private void drawGunung() {
+        drawBentukGunung(-100, height * 0.75f, 600, 200, warnagunung1, warnagunung1);
+        drawBentukGunung(420, height * 0.75f, 500, 180, warnagunung2, warnagunung2);
+    }
+
+    //Bentuk Gunung
+    private void drawBentukGunung(float x, float y, float w, float h, int c1, int c2) {
+        beginShape();
+        fill(c1);
+        vertex(x, y);
+        vertex(x + w / 2, y - h);
+        vertex(x + w, y);
+        endShape(CLOSE);
+        fill(c2);
+        rect(x, y, w, 5);
+    }
+
+    //Method Menggambar Objek Pohon
+    private void drawPohon(float x, float y) {
+        fill(139, 69, 19);
+        rect(x + 25, y - 40, 10, 40);
+
+        fill(154, 205, 50);
+        ellipse(x + 30, y - 60, 40, 40);
+        ellipse(x + 20, y - 50, 40, 40);
+        ellipse(x + 30, y - 40, 40, 40);
+        ellipse(x + 40, y - 50, 40, 40);
+        ellipse(x + 30, y - 50, 40, 40);
+
+        //Buah Apel
+        fill(178, 34, 34);
+        ellipse(x + 30, y - 63, 5, 5);
+        ellipse(x + 35, y - 43, 5, 5);
+        ellipse(x + 40, y - 55, 5, 5);
+        ellipse(x + 20, y - 55, 5, 5);
+        ellipse(x + 20, y - 40, 5, 5);
+        ellipse(x + 45, y - 40, 5, 5);
+      
+
+    }
+
+    //Method Menggambar Objek Kursi
+    private void drawKursi() {
+        fill(139, 69, 19);
+        rect(70, 280, 60, 5);
+
+        fill(139, 69, 19);
+        rect(75, 280, 5, 10);
+        rect(120, 280, 5, 10);
+    }
+
+    //Method Menggambar Objek Lampu Jalanan
+    private void drawLampujalanan() {
+        fill(0);
+        rect(60, 235, 6, 55);
+
+        fill(255, 255, 0);
+        ellipse(63, 235, 23, 23);
+
+        fill(0);
+        rect(325, 235, 6, 55);
+
+        fill(255, 255, 0);
+        ellipse(328, 235, 23, 23);
+
+        fill(0);
+        rect(577, 235, 6, 55);
+
+        fill(255, 255, 0);
+        ellipse(580, 235, 23, 23);
+
+    }
+
+    //Posisi dan Pergerakan awal burung
+    private void pergerakanBurung() {
+        float startX = -50;
+
+        for (int i = 0; i < burung; i++) {
+            burungX[i] = startX + i * 30; 
+            burungY[i] = random(50, 150);
+        }
+    }
+
+    //Method Menggambar Objek Burung
+    private void drawBurung(float x, float y) {
+        fill(0);
+        ellipse(x, y, 10, 5);
+        triangle(x - 5, y, x, y - 5, x + 5, y);
+    }
+
+    //Memperbarui Posisi Burung
+    private void updatePosisiBurung(int index) {
+        burungX[index] += kecepatanburung;
+
+        if (burungX[index] > width) {
+            burungX[index] = -10;
+        }
+    }
+
+
+}
